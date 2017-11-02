@@ -1,0 +1,44 @@
+/* This file is for your main application css. */
+
+.goBack {
+  display: block;
+  margin-bottom: 3rem;
+}
+
+.goBack .Polaris-Icon {
+  top: 5px;
+  position: relative;
+  fill: #007ace;
+  size: 0.8rem;
+  display: inline-block;
+
+}
+
+.Polaris-Spinner {
+  fill: #fff;
+}
+.Polaris-ProgressBar__Progress {
+  width: 92%
+}
+
+.Polaris-Banner {
+  margin-bottom: 1.5rem;
+}
+
+.Polaris-Banner > div:nth-child(2) {
+  width: 100%;
+}
+
+#info h1 {
+  font-size: 3rem!important;
+  margin: 2rem 0!important;
+}
+
+#info p {
+  margin-bottom: 1.5rem!important;
+}
+
+#example-image {
+  width: 80%;
+  margin: 3rem 0;
+}

@@ -1,0 +1,14 @@
+{
+  "presets": ["env", "react", "stage-0"],
+  "plugins": [
+    "transform-decorators-legacy",
+    "transform-class-properties",
+    "transform-object-rest-spread",
+    "transform-async-to-generator"
+  ],
+  "only": [
+    "*.js",
+    "*.jsx"
+  ],
+  "ignore": ["vendor"]
+}

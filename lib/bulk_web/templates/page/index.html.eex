@@ -1,0 +1,6 @@
+<input id="token" type="hidden" value="<%= @token %>">
+<input id="shop" type="hidden" value="<%= @shop.name %>">
+<input id="title" type="hidden" value="<%= @title %>">
+<input id="usage_limit" type="hidden" value="<%= @usage_limit %>">
+<div id="app"/>
+<script src="<%= static_path(@conn, "/js/app.js") %>"></script>

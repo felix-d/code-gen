@@ -1,0 +1,31 @@
+<div class="container" id="info">
+  <div class="row">
+    <div class="col-12">
+      <h1>Discount Code Generator</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <p>
+        <em>Discount Code Generator</em> is a free and easy way to generate
+        discount codes. Simply install the app via the
+        <a href="https://apps.shopify.com/" alt="Shopify App Store">Shopify App Store</a> and use it from any existing discount page.
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <p>
+        For any issues, inquiries or feature requests, please contact me at
+        <a href="mailto:flx.descoteaux@gmail.com?Subject=Discount%20Code%20Generator" target="_top">flx.descoteaux@gmail.com</a>. I will do my best to get back to you as soon as possible.
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <p>
+        Thank you!
+      </p>
+    </div>
+  </div>
+</div>
