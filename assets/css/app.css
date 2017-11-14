@@ -39,6 +39,31 @@
 }
 
 #example-image {
-  width: 80%;
-  margin: 3rem 0;
+  width: 93%;
+  border: 1px solid #ebebeb;
+  margin: 4rem 0;
+}
+
+.welcome-screenshot {
+  width: 90%;
+  overflow: hidden;
+  max-height: 350px;
+  margin: 0 auto;
+  margin-top: 2rem;
+}
+
+.welcome-screenshot img {
+  width: 100%;
+}
+
+.footer {
+  color: #474b51;
+  width: 75%;
+  margin: 0 auto;
+  margin-top: 5rem;
+  text-align: center;
+  font-size: 1.2rem;
+}
+.footer a {
+  color: #0076ed;
 }

@@ -1,11 +1,10 @@
 import { Socket } from 'phoenix'
-import { token, discountId } from './utils'
 
-const socket = new Socket('/socket', {params: {token: token()}})
+const socket = new Socket('/socket', {params: {token: window.globals.token}})
 
 socket.connect()
 
-const channel = socket.channel(`bulk:${discountId()}`, {})
+const channel = socket.channel(`bulk:${window.globals.priceRuleId}`, {})
 
 channel.join()
   .receive('ok', resp => { console.log('Connection established.') })

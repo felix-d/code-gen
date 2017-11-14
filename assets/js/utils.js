@@ -15,10 +15,6 @@ export function getParameterByName(name) {
   return ret
 }
 
-export function discountId() {
-  return getParameterByName('id')
-}
-
 export function ordinalIndicator(num) {
   const numStr = num.toString()
   let ordinalIndicator = null
@@ -34,22 +30,4 @@ export function ordinalIndicator(num) {
   }
 
   return ordinalIndicator
-}
-
-export function shop() {
-  return document.getElementById("shop").value
-}
-
-export function title() {
-  return document.getElementById("title").value
-}
-
-export function token() {
-  return document.getElementById("token").value
-}
-
-export function usageLimit() {
-  const usageLimit = document.getElementById("usage_limit").value
-  if (usageLimit === '') return null
-  return parseInt(usageLimit)
 }

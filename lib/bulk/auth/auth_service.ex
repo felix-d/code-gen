@@ -2,7 +2,7 @@ defmodule Bulk.Auth.AuthService do
   alias Bulk.Auth
 
   def authenticate(%{"shop" => shop, "code" => code} = params) do
-    case validate(params) do
+    case authorize(params) do
       :ok ->
         update_shop_token(shop, code)
         :ok
@@ -10,24 +10,25 @@ defmodule Bulk.Auth.AuthService do
     end
   end
 
-  def authorize(params) do
-    validate(params)
-  end
-
-  defp validate(%{"hmac" => hmac} = params) do
-    query = params
-            |> Map.delete("hmac")
-            |> Enum.into([])
-            |> Enum.sort(&(elem(&1, 0) < elem(&2, 0)))
-            |> Enum.map(fn {key, val} -> "#{key}=#{val}" end)
-            |> Enum.join("&")
-            |> URI.encode
-    digest = :crypto.hmac(:sha256, api_client_secret(), query) |> Base.encode16(case: :lower)
-
-    if SecureCompare.compare(digest, hmac) do
+  def authorize(%{"hmac" => hmac} = params) do
+    if Application.get_env(:bulk, :skip_auth) do
       :ok
     else
-      {:error, digest}
+      query = params
+              |> Map.delete("hmac")
+              |> Map.delete("path")
+              |> Enum.into([])
+              |> Enum.sort(&(elem(&1, 0) < elem(&2, 0)))
+              |> Enum.map(fn {key, val} -> "#{key}=#{val}" end)
+              |> Enum.join("&")
+              |> URI.encode
+      digest = :crypto.hmac(:sha256, api_client_secret(), query) |> Base.encode16(case: :lower)
+
+      if SecureCompare.compare(digest, hmac) do
+        :ok
+      else
+        {:error, digest}
+      end
     end
   end
 

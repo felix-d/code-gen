@@ -1,5 +1,6 @@
 use Mix.Config
 
+config :bulk, skip_auth: true
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

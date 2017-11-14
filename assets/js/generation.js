@@ -1,5 +1,4 @@
 import socket from './socket'
-import { discountId, title } from './utils'
 
 const CHANGE_CODE_COUNT = 'change_number_discount_codes'
 const CHANGE_PREFIX = 'change_prefix'
@@ -14,8 +13,8 @@ const DISMISS_USAGE_LIMIT_BANNER = 'dismiss_usage_limit_banner'
 const initialState = {
   status: READY,
   showUsageLimitBanner: true,
-  id: discountId(),
-  prefix: title().substring(0, 20),
+  id: window.globals.priceRuleId,
+  prefix: window.globals.priceRuleTitle.substring(0, 20),
   codeCount: 100,
 }
 
@@ -96,8 +95,13 @@ export function dismissUsageLimitBanner() {
   }
 }
 
-export function generate(count, id, token, prefix) {
-  socket.push('generate', { count: parseInt(count), token, id, prefix })
+export function generate(count, prefix) {
+  socket.push('generate', {
+    count: parseInt(count),
+    token: window.globals.token,
+    id: window.globals.priceRuleId,
+    prefix,
+  })
 
   return {
     type: GENERATE,
