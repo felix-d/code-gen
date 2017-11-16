@@ -62,7 +62,7 @@ export default (state = initialState, action) => {
         ...state,
         status: READY,
         progress: null,
-        codeCount: action.count.substring(0, 4),
+        codeCount: action.count.substring(0, 5),
       }
     case GENERATE:
       return {

@@ -76,7 +76,7 @@ class Generate extends ShopifyPage  {
                 disabled={this.props.pending}
                 type="number"
                 value={this.props.codeCount}
-                max={9999}
+                max={99999}
                 min={0}
                 label="Number of discount codes"
               />
