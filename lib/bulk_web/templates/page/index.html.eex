@@ -1,8 +1,8 @@
 <div id="app"/>
 <script type="text/javascript">
   window.globals = {
-    shop: '<%= @shop && @shop.name %>',
-    token: '<%= @shop && @shop.token %>',
+    shop: '<%= shop_name(assigns) %>',
+    token: '<%= shop_token(assigns) %>',
     apiClientId: '<%= @api_client_id %>',
     priceRuleTitle: '<%= @title %>',
     priceRuleId: '<%= @id %>',

@@ -16,7 +16,6 @@ import Generate from './containers/Generate'
 // https://help.shopify.com/api/sdks/shopify-apps/embedded-app-sdk/getting-started
 const isRunningInsideIFrame = window.top !== window.self
 const isRunningLocally = window.location.hostname === 'localhost'
-debugger
 if (!isRunningInsideIFrame && !isRunningLocally) {
   window.location.href = `/install${window.location.search}`
 } else {

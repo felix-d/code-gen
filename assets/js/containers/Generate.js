@@ -1,7 +1,7 @@
 import React from 'react'
 import ShopifyPage from './ShopifyPage'
 import { connect } from 'react-redux'
-import { FormLayout, Page, Banner, TextField, Card } from '@shopify/polaris'
+import { Button, FormLayout, Popover, Page, Banner, TextField, Card } from '@shopify/polaris'
 
 import socket from '../socket'
 import { generate, changePrefix, changeCodeCount, pending } from '../generation'
@@ -80,9 +80,7 @@ class Generate extends ShopifyPage  {
                 min={0}
                 label="Number of discount codes"
               />
-
           </FormLayout.Group>
-
         </FormLayout>
       </Card>
       <p className="footer">

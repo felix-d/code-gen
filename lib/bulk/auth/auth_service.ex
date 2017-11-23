@@ -10,25 +10,30 @@ defmodule Bulk.Auth.AuthService do
     end
   end
 
+
   def authorize(%{"hmac" => hmac} = params) do
+    query = params
+            |> Map.delete("hmac")
+            |> Map.delete("path")
+            |> Enum.into([])
+            |> Enum.sort(&(elem(&1, 0) < elem(&2, 0)))
+            |> Enum.map(fn {key, val} -> "#{key}=#{val}" end)
+            |> Enum.join("&")
+            |> URI.encode
+    digest = :crypto.hmac(:sha256, api_client_secret(), query) |> Base.encode16(case: :lower)
+
+    if SecureCompare.compare(digest, hmac) do
+      :ok
+    else
+      {:error, digest}
+    end
+  end
+
+  def authorize(_params) do
     if Application.get_env(:bulk, :skip_auth) do
       :ok
     else
-      query = params
-              |> Map.delete("hmac")
-              |> Map.delete("path")
-              |> Enum.into([])
-              |> Enum.sort(&(elem(&1, 0) < elem(&2, 0)))
-              |> Enum.map(fn {key, val} -> "#{key}=#{val}" end)
-              |> Enum.join("&")
-              |> URI.encode
-      digest = :crypto.hmac(:sha256, api_client_secret(), query) |> Base.encode16(case: :lower)
-
-      if SecureCompare.compare(digest, hmac) do
-        :ok
-      else
-        {:error, digest}
-      end
+      {:error, nil}
     end
   end
 
@@ -46,14 +51,15 @@ defmodule Bulk.Auth.AuthService do
   end
 
   defp get_token(shop, code) do
-    url = "https://#{shop}/admin/oauth/access_token"
+    {:ok, client} = Bulk.Shopify.Client.start_link(shop)
     payload = %{
       client_id: api_client_id(),
       client_secret: api_client_secret(),
       code: code,
     }
-    response = HTTPoison.post!(url, Poison.encode!(payload), [{"Content-Type", "application/json"}])
-    Poison.decode!(response.body) |> Map.get("access_token")
+
+    Bulk.Shopify.Client.post(client, "/admin/oauth/access_token", payload)
+    |> Map.get("access_token")
   end
 
   defp api_client_secret do

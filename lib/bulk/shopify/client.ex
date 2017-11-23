@@ -2,9 +2,9 @@ defmodule Bulk.Shopify.Client do
   use Agent
   require Logger
 
-  def start_link(shop, id) do
-    url = "https://#{shop.name}/admin/price_rules/#{id}"
-    Agent.start_link(fn -> {url, shop.shopify_token} end)
+  def start_link(shop_name, token \\ nil) do
+    url = "https://#{shop_name}"
+    Agent.start_link(fn -> {url, token} end)
   end
 
   def get(pid, path) do
@@ -33,9 +33,11 @@ defmodule Bulk.Shopify.Client do
   end
 
   defp headers(token) do
-    [
-      {"Content-Type", "application/json"},
-      {"X-Shopify-Access-Token", token},
-    ]
+    base_headers = [{"Content-Type", "application/json"}]
+    if token do
+      [{"X-Shopify-Access-Token", token} | base_headers]
+    else
+      base_headers
+    end
   end
 end

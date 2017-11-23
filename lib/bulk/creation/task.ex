@@ -16,19 +16,19 @@ defmodule Bulk.Creation.Task do
   end
 
   def run(shop, id, count, prefix) do
-    {:ok, client} = Client.start_link(shop, id)
+    {:ok, client} = Client.start_link(shop.name, shop.token)
     queue = get_or_create_queue(shop.name)
 
     refs = chunks(count)
     |> Enum.map(fn chunk ->
       codes = generate_codes(chunk, prefix)
-      create_codes(client, queue, codes)
+      create_codes(client, id, queue, codes)
     end)
 
     ref_count = length(refs)
 
-    notifier = notify_about_position_in_queue(id, client, count, hd(refs), ref_count)
-    notify_about_creation_progress(client, queue, ref_count, notifier)
+    notifier = notify_about_position_in_queue(id, count, hd(refs), ref_count)
+    notify_about_creation_progress(client, id, queue, ref_count, notifier)
 
     NotifierStore.del(id)
   end
@@ -59,15 +59,15 @@ defmodule Bulk.Creation.Task do
   end
 
   # TODO: refactor this method to extract the notifier initialization
-  defp notify_about_position_in_queue(id, client, code_count, head_ref, chunk_count, notifier \\ nil) do
+  defp notify_about_position_in_queue(id, code_count, head_ref, chunk_count, notifier \\ nil) do
     receive do
       {:position, ^head_ref, i} ->
         if notifier == nil do
           notifier = init_notifier(code_count, id, i + chunk_count * 2)
-          notify_about_position_in_queue(id, client, code_count, head_ref, chunk_count, notifier)
+          notify_about_position_in_queue(id, code_count, head_ref, chunk_count, notifier)
         else
           Notifier.increment(notifier)
-          notify_about_position_in_queue(id, client, code_count, head_ref, chunk_count, notifier)
+          notify_about_position_in_queue(id, code_count, head_ref, chunk_count, notifier)
         end
       {:dequeued, ^head_ref} -> notifier || init_notifier(code_count, id, chunk_count * 2)
     end
@@ -79,27 +79,27 @@ defmodule Bulk.Creation.Task do
     notifier
   end
 
-  defp notify_about_creation_progress(client, queue, ref_count, notifier) do
-    extract_creation_ids(client, queue, ref_count, notifier)
+  defp notify_about_creation_progress(client, id, queue, ref_count, notifier) do
+    extract_creation_ids(client, id, queue, ref_count, notifier)
     |> Enum.each(&Task.await(&1, 600_000))
   end
 
-  defp extract_creation_ids(client, queue, ref_count, notifier, results \\ []) do
+  defp extract_creation_ids(client, id, queue, ref_count, notifier, results \\ []) do
     if length(results) == ref_count do
       results
     else
       receive do
         {:result, _ref, creation_id} ->
           Notifier.increment(notifier)
-          task = Task.async(fn -> wait_for_creation(client, queue, creation_id, notifier) end)
-          extract_creation_ids(client, queue, ref_count, notifier, [task | results])
+          task = Task.async(fn -> wait_for_creation(client, id, queue, creation_id, notifier) end)
+          extract_creation_ids(client, id, queue, ref_count, notifier, [task | results])
       end
     end
   end
 
-  defp wait_for_creation(client, queue, creation_id, notifier) do
+  defp wait_for_creation(client, id, queue, creation_id, notifier) do
     {:ok, ref, _} = ThrottledQueue.enqueue(queue, fn ->
-      Creation.status(client, creation_id)
+      Creation.status(client, id, creation_id)
     end)
 
     receive do
@@ -107,15 +107,15 @@ defmodule Bulk.Creation.Task do
         if status == "completed" do
           Notifier.increment(notifier)
         else
-          wait_for_creation(client, queue, creation_id, notifier)
+          wait_for_creation(client, id, queue, creation_id, notifier)
         end
     end
   end
 
-  defp create_codes(client, queue, codes) do
+  defp create_codes(client, id, queue, codes) do
     params = %{discount_codes: codes}
     {:ok, ref, _} = ThrottledQueue.enqueue(queue, fn ->
-      Creation.id(client, params)
+      Creation.id(client, id, params)
     end)
     ref
   end

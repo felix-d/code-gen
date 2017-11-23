@@ -6,9 +6,21 @@ defmodule Bulk.AuthTest do
   describe "shop" do
     alias Bulk.Shopify.Shop
 
-    @valid_attrs %{name: "some name", shopify_token: "some shopify_token"}
-    @update_attrs %{name: "some updated name", shopify_token: "some updated shopify_token"}
-    @invalid_attrs %{name: nil, shopify_token: nil}
+    @valid_attrs %{
+      name: "some-name.com",
+      shopify_token: "some shopify_token",
+      token: "some token",
+    }
+    @update_attrs %{
+      name: "some-updated-name.com",
+      shopify_token: "some updated shopify_token",
+      token: "some updated token",
+    }
+    @invalid_attrs %{
+      name: nil,
+      shopify_token: nil,
+      token: nil,
+    }
 
     def shop_fixture(attrs \\ %{}) do
       {:ok, shop} =
@@ -31,7 +43,7 @@ defmodule Bulk.AuthTest do
 
     test "create_shop/1 with valid data creates a shop" do
       assert {:ok, %Shop{} = shop} = Auth.create_shop(@valid_attrs)
-      assert shop.name == "some name"
+      assert shop.name == "some-name.com"
       assert shop.shopify_token == "some shopify_token"
     end
 
@@ -43,7 +55,7 @@ defmodule Bulk.AuthTest do
       shop = shop_fixture()
       assert {:ok, shop} = Auth.update_shop(shop, @update_attrs)
       assert %Shop{} = shop
-      assert shop.name == "some updated name"
+      assert shop.name == "some-updated-name.com"
       assert shop.shopify_token == "some updated shopify_token"
     end
 

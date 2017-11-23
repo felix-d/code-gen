@@ -19,8 +19,8 @@ defmodule BulkWeb.PageController do
       :ok ->
         shop = Bulk.Auth.get_shop_by_name!(shop)
 
-        {:ok, client} = Client.start_link(shop, id)
-        {:ok, price_rule} = PriceRule.start_link(client)
+        {:ok, client} = Client.start_link(shop.name, shop.token)
+        {:ok, price_rule} = PriceRule.start_link(client, id)
 
         render conn, "index.html", shop: shop, title: PriceRule.title(price_rule), api_client_id: api_client_id(), id: id
       {:error, digest} -> conn |> put_status(403) |> text("Authentication failed. Digest provided was: #{digest}")

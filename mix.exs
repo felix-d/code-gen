@@ -46,6 +46,7 @@ defmodule Bulk.Mixfile do
       {:secure_random, "~> 0.5"},
       {:cowboy, "~> 1.0"},
       {:throttled_queue, "~> 0.2.0-dev"},
+      {:mock, "~> 0.2.0", only: :test},
       {:cachex, "~> 2.1"}
     ]
   end
