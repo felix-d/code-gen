@@ -20,13 +20,13 @@ defmodule BulkWeb.BulkChannel do
   end
 
   defp connect(id, socket) do
-    case Creation.NotifierStore.get(id) do
+    case Creation.StatusManager.task_status(id) do
       nil -> nil
-      notifier -> Creation.Notifier.progress(notifier, socket)
+      status -> Phoenix.Channel.push(socket, "progress", status)
     end
   end
 
-  defp generate_codes(shop, count, id, prefix) do
-    Creation.Task.start(shop, count, id, prefix)
+  defp generate_codes(shop, code_count, id, prefix) do
+    Creation.TaskManager.start_task(shop, code_count, id, prefix)
   end
 end

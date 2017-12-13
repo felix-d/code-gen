@@ -52,6 +52,7 @@ defmodule Bulk.Auth.AuthService do
 
   defp get_token(shop, code) do
     {:ok, client} = Bulk.Shopify.Client.start_link(shop)
+
     payload = %{
       client_id: api_client_id(),
       client_secret: api_client_secret(),

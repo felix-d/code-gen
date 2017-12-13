@@ -41,6 +41,37 @@ defmodule Bulk.AuthTest do
       assert Auth.get_shop!(shop.id) == shop
     end
 
+    test "get_shop_by_name!/1 returns the shop with a given name" do
+      shop = shop_fixture()
+      assert shop == Auth.get_shop_by_name!("some-name.com")
+    end
+
+    test "get_shop_by_name/1 returns the shop with a given name" do
+      shop = shop_fixture()
+      assert shop == Auth.get_shop_by_name("some-name.com")
+    end
+
+    test "get_shop_by_name/1 returns nil if the shop was not found" do
+      refute Auth.get_shop_by_name("foobar")
+    end
+
+    test "get_shop_by_name!/1 raises if the name is the shop was not found" do
+      assert_raise(Ecto.NoResultsError, fn ->
+        Auth.get_shop_by_name!("foobar")
+      end)
+    end
+
+    test "get_shop_by_token!/1 returns the shop with a given token" do
+      shop = shop_fixture()
+      assert shop == Auth.get_shop_by_token!(shop.token)
+    end
+
+    test "get_shop_by_token!/1 raises if the shop was not found" do
+      assert_raise(Ecto.NoResultsError, fn ->
+        Auth.get_shop_by_token!("foobar")
+      end)
+    end
+
     test "create_shop/1 with valid data creates a shop" do
       assert {:ok, %Shop{} = shop} = Auth.create_shop(@valid_attrs)
       assert shop.name == "some-name.com"

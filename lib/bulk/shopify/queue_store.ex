@@ -1,4 +1,4 @@
-defmodule Bulk.Creation.QueueStore do
+defmodule Bulk.Shopify.QueueStore do
   def cache_name do
     :queue_store
   end
