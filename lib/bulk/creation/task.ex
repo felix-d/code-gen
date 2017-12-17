@@ -13,7 +13,7 @@ defmodule Bulk.Creation.Task do
   end
 
   def run(shop, id, count, prefix) do
-    {:ok, client} = Client.start_link(shop.name, token: shop.token, throttled: true)
+    {:ok, client} = Client.start_link(shop.name, token: shop.shopify_token, throttled: true)
 
     refs = chunks(count) |> Enum.map(fn chunk ->
       generate_codes(chunk, prefix) |> create_codes(client, id)
@@ -42,9 +42,9 @@ defmodule Bulk.Creation.Task do
     0..count - 1
     |> Enum.map(fn _ ->
       if prefix != nil do
-        "#{prefix}-#{SecureRandom.hex(8)}"
+        "#{prefix}-#{SecureRandom.hex(4) |> String.upcase}"
       else
-        SecureRandom.hex(16)
+        SecureRandom.hex(6) |> String.upcase
       end
     end)
     |> Enum.map(&(%{code: &1}))

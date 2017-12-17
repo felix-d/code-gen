@@ -19,7 +19,7 @@ defmodule BulkWeb.PageController do
       :ok ->
         shop = Bulk.Auth.get_shop_by_name!(shop)
 
-        {:ok, client} = Client.start_link(shop.name, token: shop.token)
+        {:ok, client} = Client.start_link(shop.name, token: shop.shopify_token)
         title = PriceRule.get(client, id) |> PriceRule.title
 
         render conn, "index.html", shop: shop, title: title, api_client_id: api_client_id(), id: id

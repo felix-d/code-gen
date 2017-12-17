@@ -5,7 +5,12 @@ defmodule Bulk.Creation.TaskManager do
   alias Bulk.Creation.Task
   alias Bulk.Shopify.QueueStore
 
-  @timeout 1000 * 5
+  @timeout 1000 * 15
+
+  defmodule TaskData do
+    @enforce_keys [:shop, :id, :timer]
+    defstruct [:shop, :id, :timer]
+  end
 
   def init(state) do
     Process.flag(:trap_exit, true)
@@ -31,16 +36,16 @@ defmodule Bulk.Creation.TaskManager do
 
     timer = Process.send_after(self(), {:kill_task, task_pid}, @timeout)
 
-    {:noreply, state |> Map.put(task_pid, {id, timer, shop})}
+    {:noreply, state |> Map.put(task_pid, %TaskData{id: id, timer: timer, shop: shop})}
   end
 
   def handle_cast({:clear_timeout, task_pid}, state) do
-    %{^task_pid => {id, timer, shop}} = state
+    %{^task_pid => %TaskData{id: id, timer: timer, shop: shop}} = state
 
     Process.cancel_timer(timer)
     timer = Process.send_after(self(), {:kill_task, task_pid}, @timeout)
 
-    {:noreply, %{state | task_pid => {id, timer, shop}}}
+    {:noreply, %{state | task_pid => %TaskData{id: id, timer: timer, shop: shop}}}
   end
 
   def handle_info({:kill_task, task_pid}, state) do
@@ -50,7 +55,7 @@ defmodule Bulk.Creation.TaskManager do
   end
 
   def handle_info({:EXIT, task_pid, :killed}, state) do
-    %{^task_pid => {id, timer, shop}} = state
+    %{^task_pid => %TaskData{id: id, timer: timer, shop: shop}} = state
 
     Process.cancel_timer(timer)
     clear_requests_enqueued_from_task(shop, task_pid)
@@ -60,7 +65,7 @@ defmodule Bulk.Creation.TaskManager do
   end
 
   def handle_info({:EXIT, task_pid, :normal}, state) do
-    %{^task_pid => {id, timer, _shop}} = state
+    %{^task_pid => %TaskData{id: id, timer: timer}} = state
 
     Process.cancel_timer(timer)
     StatusManager.task_finished(id)

@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Button, FormLayout, Popover, Page, Banner, TextField, Card } from '@shopify/polaris'
 
 import socket from '../socket'
-import { generate, changePrefix, changeCodeCount, pending } from '../generation'
+import { generate, changePrefix, changeCodeCount, pending, error } from '../generation'
 
 import PendingBanner from '../components/PendingBanner'
 import SuccessBanner from '../components/SuccessBanner'
@@ -14,6 +14,7 @@ class Generate extends ShopifyPage  {
     super(props)
 
     socket.on('progress', info => { props.doPending(info) })
+    socket.on('error', () => { props.doError() })
 
     this.generate = this.generate.bind(this)
     this.banner = this.banner.bind(this)
@@ -35,6 +36,13 @@ class Generate extends ShopifyPage  {
       banner = <SuccessBanner codeCount={this.props.codeCount}/>
     } else if (this.props.pending) {
       banner = <PendingBanner progress={this.props.progress} />
+    } else if (this.props.error) {
+      banner = (
+        <Banner status="critical" title="Oops!">
+          There has been a problem with your discount code creation.
+          Please retry later.
+        </Banner>
+      )
     }
     return banner
   }
@@ -100,6 +108,7 @@ const mapStateToProps = state => ({
   completed: state.status === 'completed',
   pending: state.status == 'pending',
   progress: state.progress,
+  error: state.status == 'error',
   prefix: state.prefix,
   codeCount: state.codeCount,
 })
@@ -107,6 +116,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   doPending: pending,
   generate,
+  doError: error,
   changePrefix,
   changeCodeCount,
 }

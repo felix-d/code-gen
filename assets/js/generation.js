@@ -6,35 +6,22 @@ const GENERATE = 'generate'
 const PENDING = 'pending'
 const COMPLETED = 'completed'
 const READY = 'ready'
-const USAGE_LIMIT_SET = 'usage_limit_set'
-const SET_USAGE_LIMIT = 'set_usage_limit'
-const DISMISS_USAGE_LIMIT_BANNER = 'dismiss_usage_limit_banner'
+const ERROR = 'error'
 
 const initialState = {
   status: READY,
-  showUsageLimitBanner: true,
   id: window.globals.priceRuleId,
   prefix: window.globals.priceRuleTitle.substring(0, 20),
   codeCount: 100,
+  error: false,
 }
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case SET_USAGE_LIMIT:
+    case ERROR:
       return {
         ...state,
-        usageLimitPending: true,
-      }
-    case USAGE_LIMIT_SET:
-      return {
-        ...state,
-        showUsageLimitBanner: false,
-        usageLimitPending: false,
-      }
-    case DISMISS_USAGE_LIMIT_BANNER:
-      return {
-        ...state,
-        showUsageLimitBanner: false,
+        status: ERROR
       }
     case CHANGE_PREFIX:
       return {
@@ -76,25 +63,6 @@ export default (state = initialState, action) => {
   }
 }
 
-export function setUsageLimit() {
-  socket.push('set_usage_limit')
-  return {
-    type: SET_USAGE_LIMIT,
-  }
-}
-
-export function usageLimitSet() {
-  return {
-    type: USAGE_LIMIT_SET,
-  }
-}
-
-export function dismissUsageLimitBanner() {
-  return {
-    type: DISMISS_USAGE_LIMIT_BANNER,
-  }
-}
-
 export function generate(count, prefix) {
   socket.push('generate', {
     count: parseInt(count),
@@ -120,6 +88,12 @@ export function changePrefix(prefix) {
   return {
     type: CHANGE_PREFIX,
     prefix,
+  }
+}
+
+export function error() {
+  return {
+    type: ERROR,
   }
 }
 

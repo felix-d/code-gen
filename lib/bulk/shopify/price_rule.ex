@@ -9,8 +9,4 @@ defmodule Bulk.Shopify.PriceRule do
   def title(price_rule) do
     price_rule |> Map.get("title")
   end
-
-  def usage_limit(price_rule) do
-    price_rule |> Map.get("usage_limit")
-  end
 end
