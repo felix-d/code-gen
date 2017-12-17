@@ -45,7 +45,7 @@ defmodule Bulk.Mixfile do
       {:gettext, "~> 0.11"},
       {:secure_random, "~> 0.5"},
       {:cowboy, "~> 1.0"},
-      {:throttled_queue, "~> 0.2.0-dev"},
+      {:throttled_queue, "~> 0.4.0-dev"},
       {:mock, "~> 0.2.0", only: :test},
       {:cachex, "~> 2.1"}
     ]

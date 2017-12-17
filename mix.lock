@@ -32,5 +32,5 @@
   "secure_compare": {:hex, :secure_compare, "0.1.0", "01b3c93c8edb696e8a5b38397ed48e10958c8a5ec740606656445bcbec0aadb8", [:mix], []},
   "secure_random": {:hex, :secure_random, "0.5.1", "c5532b37c89d175c328f5196a0c2a5680b15ebce3e654da37129a9fe40ebf51b", [:mix], []},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.1", "28a4d65b7f59893bc2c7de786dec1e1555bd742d336043fe644ae956c3497fbe", [:make, :rebar], []},
-  "throttled_queue": {:hex, :throttled_queue, "0.2.0-dev", "4a79978be85e420fb20cfd87ecb63fe5232730a449977d15df9c5bd3b1e20182", [:mix], []},
+  "throttled_queue": {:hex, :throttled_queue, "0.4.0-dev", "8e838357df86597ea850e97ee1baea918360819cc608c4ec705ae71dbe8e63d0", [:mix], []},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.3.1", "a1f612a7b512638634a603c8f401892afbf99b8ce93a45041f8aaca99cadb85e", [:rebar3], []}}

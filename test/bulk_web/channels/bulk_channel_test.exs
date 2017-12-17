@@ -44,6 +44,57 @@ defmodule BulkWeb.BulkChannelTest do
     assert_push "progress", %{id: "123", code_count: 100, progress: 0}, 100
   end
 
+  test "run a code generation that fails" do
+    shop = shop_fixture()
+
+    {:ok, _, socket} =
+      socket("user_socket:#{shop.token}", %{shop: shop})
+      |> subscribe_and_join(BulkChannel, "bulk:123", %{})
+
+    creation_result = %MockResponse{body: Poison.encode! %{
+      "discount_code_creation" => %{
+        "status" => "pending",
+        "id" => 66,
+      }
+    }}
+
+    creation_status = %MockResponse{body: Poison.encode! %{
+      "discount_code_creation" => %{
+        "status" => "pending",
+      }
+    }}
+
+    with_mock HTTPoison, [
+      post!: fn ("https://some-shop.com/admin/price_rules/123/batch.json", _, _) -> creation_result end,
+      get!: fn ("https://some-shop.com/admin/price_rules/123/batch/66.json", _) -> creation_status end,
+    ] do
+      push(socket, "generate", %{
+        "count" => 100,
+        "id" => "123",
+        "token" => shop.token,
+        "prefix" => "abc",
+      })
+
+      assert_broadcast("progress", %{
+        code_count: 100,
+        id: "123",
+        progress: 0,
+      }, 1000)
+
+      assert_broadcast("progress", %{
+        code_count: 100,
+        id: "123",
+        progress: 0.5,
+      }, 1000)
+
+      assert_broadcast("error", %{
+        code_count: 100,
+        id: "123",
+        progress: 0.5,
+      }, 5500)
+    end
+  end
+
   test "run a code generation" do
     shop = shop_fixture()
 

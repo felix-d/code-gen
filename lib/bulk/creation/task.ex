@@ -101,7 +101,7 @@ defmodule Bulk.Creation.Task do
           "completed" ->
             TaskManager.clear_timeout(task_pid)
             StatusManager.update_progress(id)
-          true -> wait_for_creation(creation_id, task_pid, client, id)
+          _ -> wait_for_creation(creation_id, task_pid, client, id)
         end
     end
   end
