@@ -22,13 +22,6 @@ config :bulk, BulkWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :debug
 
-config :bulk, Bulk.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: System.get_env("DATABASE_USERNAME"),
-  password: System.get_env("DATABASE_PASSWORD"),
-  database: System.get_env("DATABASE_URL"),
-  pool_size: 15
-
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
@@ -65,7 +58,3 @@ config :bulk, Bulk.Repo,
 # start per endpoint:
 #
 #     config :bulk, BulkWeb.Endpoint, server: true
-#
-
-config :bulk, BulkWeb.Endpoint,
-  secret_key_base: System.get_env("APP_SECRET")

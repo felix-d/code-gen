@@ -20,7 +20,13 @@ defmodule Bulk.Mixfile do
   def application do
     [
       mod: {Bulk.Application, []},
-      extra_applications: [:logger, :runtime_tools, :httpoison, :cachex]
+      extra_applications: [
+        :logger,
+        :runtime_tools,
+        :httpoison,
+        :cachex,
+        :edeliver,
+      ]
     ]
   end
 
@@ -33,6 +39,8 @@ defmodule Bulk.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:edeliver, "~> 1.4.4"},
+      {:distillery, ">= 0.8.0", warn_missing: false},
       {:poison, "~> 3.1"},
       {:httpoison, "~> 0.13"},
       {:phoenix, "~> 1.3.0"},
