@@ -15,7 +15,7 @@ use Mix.Config
 # which you typically run after static files are built.
 config :bulk, BulkWeb.Endpoint,
   load_from_system_env: true,
-  url: [scheme: "https", host: "discount-code-generator-fx.herokuapp.com", port: 443],
+  url: [scheme: "https", host: System.get_env("HOST"), port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
