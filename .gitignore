@@ -5,6 +5,7 @@
 /*.ez
 .env
 .DS_STORE
+.deliver/releases/
 
 # Generated on crash by the VM
 erl_crash.dump
@@ -27,3 +28,6 @@ npm-debug.log
 # secrets files as long as you replace their contents by environment
 # variables.
 /config/*.secret.exs
+/config/ssh_key.pub
+.edeliver
+erl_crash.dump

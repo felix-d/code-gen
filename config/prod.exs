@@ -15,19 +15,12 @@ use Mix.Config
 # which you typically run after static files are built.
 config :bulk, BulkWeb.Endpoint,
   load_from_system_env: true,
-  url: [scheme: "https", host: "www.discount-code-generator.com", port: 443],
+  url: [scheme: "https", host: System.get_env("HOST"), port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
 config :logger, level: :debug
-
-config :bulk, Bulk.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: System.get_env("DATABASE_USERNAME"),
-  password: System.get_env("DATABASE_PASSWORD"),
-  database: System.get_env("DATABASE_URL"),
-  pool_size: 15
 
 # ## SSL Support
 #
@@ -65,7 +58,3 @@ config :bulk, Bulk.Repo,
 # start per endpoint:
 #
 #     config :bulk, BulkWeb.Endpoint, server: true
-#
-
-config :bulk, BulkWeb.Endpoint,
-  secret_key_base: System.get_env("APP_SECRET")

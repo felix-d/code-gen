@@ -20,7 +20,12 @@ defmodule Bulk.Mixfile do
   def application do
     [
       mod: {Bulk.Application, []},
-      extra_applications: [:logger, :runtime_tools, :httpoison, :cachex]
+      extra_applications: [
+        :logger,
+        :runtime_tools,
+        :httpoison,
+        :cachex,
+      ]
     ]
   end
 

@@ -13,8 +13,7 @@ config :bulk,
 
 # Configures the endpoint
 config :bulk, BulkWeb.Endpoint,
-  url: [port: 4000],
-  secret_key_base: "//XdKbTCsfr8armyCtACmkgI9POfsQKkI3Rz1zWQDcJTryRwn+Ps3zWuura/+t5o",
+  secret_key_base: System.get_env("APP_SECRET"),
   render_errors: [view: BulkWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Bulk.PubSub,
            adapter: Phoenix.PubSub.PG2]
@@ -24,6 +23,10 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :bulk, Bulk.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  database: System.get_env("DATABASE_URL"),
+  pool_size: 10
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
