@@ -1,13 +1,33 @@
 import React from 'react'
 import ShopifyPage from './ShopifyPage'
 import { connect } from 'react-redux'
-import { Button, FormLayout, Popover, Page, Banner, TextField, Card } from '@shopify/polaris'
+import {
+  Button,
+  FormLayout,
+  Popover,
+  Page,
+  Banner,
+  TextField,
+  Card,
+  Tabs,
+} from '@shopify/polaris'
 
 import socket from '../socket'
-import { generate, changePrefix, changeCodeCount, pending, error } from '../generation'
+import {
+  generate,
+  selectTab,
+  importCSV,
+  uploadCSV,
+  changePrefix,
+  changeCodeCount,
+  pending,
+  error,
+} from '../generation'
 
 import PendingBanner from '../components/PendingBanner'
 import SuccessBanner from '../components/SuccessBanner'
+import GenerateCodes from '../components/GenerateCodes'
+import ImportCSV from '../components/ImportCSV'
 
 class Generate extends ShopifyPage  {
   constructor(props) {
@@ -18,6 +38,7 @@ class Generate extends ShopifyPage  {
 
     this.generate = this.generate.bind(this)
     this.banner = this.banner.bind(this)
+    this.activeCard = this.activeCard.bind(this)
   }
 
   componentWillMount() {
@@ -55,42 +76,50 @@ class Generate extends ShopifyPage  {
     }
   }
 
+  activeCard() {
+    switch (this.props.selectedTabIndex) {
+      case 0:
+        return <GenerateCodes
+          pending={this.props.pending}
+          generate={this.generate}
+          changePrefix={this.props.changePrefix}
+          prefix={this.props.prefix}
+          changeCodeCount={this.props.changeCodeCount}
+          codeCount={this.props.codeCount}
+        />
+      case 1:
+        return <ImportCSV
+          csvFileName={this.props.csvFileName}
+          codes={this.props.codes}
+          uploadingCSV={this.props.uploadingCSV}
+          pending={this.props.pending}
+          importCSV={this.props.importCSV}
+          uploadCSV={this.props.uploadCSV}
+        />
+      default:
+    }
+  }
+
   render() {
     return (
       <Page breadcrumbs={[{content: 'Go back', url: `https://${window.globals.shop}/admin/discounts/${window.globals.priceRuleId}`}]}>
         {this.banner()}
-        <Card
-          sectioned
-          primaryFooterAction={{
-            content: 'Generate',
-            loading: this.props.pending,
-            onClick: this.generate
-          }}
-          title="Generate discount codes"
-        >
-          <FormLayout>
-            <FormLayout.Group>
-              <TextField
-                type="text"
-                onChange={this.props.changePrefix}
-                disabled={this.props.pending}
-                value={this.props.prefix}
-                placeholder="None"
-                maxLength={20}
-                label="Code prefix"
-              />
-              <TextField
-                onChange={this.props.changeCodeCount}
-                disabled={this.props.pending}
-                type="number"
-                value={this.props.codeCount}
-                max={9999}
-                min={0}
-                label="Number of discount codes"
-              />
-          </FormLayout.Group>
-        </FormLayout>
-      </Card>
+        <div id="menu-tabs">
+          <Tabs
+            onSelect={this.props.selectTab}
+            selected={this.props.selectedTabIndex}
+            tabs={[{
+              id: 'generate',
+              content: 'Generate discount codes',
+              panelID: 'generate-panel',
+            }, {
+              id: 'import-csv',
+              content: 'Import from CSV',
+              panelID: 'csv-panel',
+            }]}
+          />
+        </div>
+        {this.activeCard()}
       <p className="footer">
         For support, inquiries or feature requests please contact me at <a
           href="mailto:flx.descoteaux@gmail.com?Subject=Discount%20Code%20Generator"
@@ -108,7 +137,11 @@ const mapStateToProps = state => ({
   completed: state.status === 'completed',
   pending: state.status == 'pending',
   progress: state.progress,
+  csvFileName: state.csvFileName,
+  uploadingCSV: state.uploadingCSV,
+  codes: state.codes,
   error: state.status == 'error',
+  selectedTabIndex: state.selectedTabIndex,
   prefix: state.prefix,
   codeCount: state.codeCount,
 })
@@ -116,9 +149,12 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   doPending: pending,
   generate,
+  selectTab,
   doError: error,
   changePrefix,
   changeCodeCount,
+  uploadCSV,
+  importCSV,
 }
 
 export default connect(
