@@ -8,7 +8,7 @@ const fileMessage = (csvFileName, codes) => {
   let message = ""
 
   if (!csvFileName) {
-    message = "No file selected."
+    message = "No file uploaded."
   } else if (codes && codes.length === 1) {
     message = `${csvFileName} (1 code)`
   } else if (codes && codes.length > 9999) {
@@ -49,7 +49,7 @@ export default ({
         <div className="center">
           <div className="small-label-info csv-info">{fileMessage(csvFileName, codes)}</div>
           <ReactFileReader fileTypes={'.csv'} handleFiles={uploadCSV}>
-            <Button loading={uploadingCSV} disabled={pending} size="slim">Import CSV file</Button>
+            <Button loading={uploadingCSV} disabled={pending} size="slim">Upload CSV file</Button>
           </ReactFileReader>
           <div id="example-template-btn">
             <CSVLink filename="example.csv" data={exampleCSV} target="_blank">
