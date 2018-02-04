@@ -67,3 +67,23 @@
 .footer a {
   color: #0076ed;
 }
+#menu-tabs {
+  margin-bottom: 1.5rem!important;
+}
+.small-label-info {
+  color: #a5a5a5;
+}
+.center {
+  text-align: center;
+}
+.csv-info {
+  margin-top: 1.0rem;
+  margin-bottom: 1.2rem;
+}
+#example-template-btn {
+  margin-top: 0.8rem;
+}
+
+#example-template-btn .Polaris-Button__Content {
+  font-size: 1.3rem!important;
+}

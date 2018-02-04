@@ -1,4 +1,5 @@
 import socket from './socket'
+import { filter } from 'lodash'
 
 const CHANGE_CODE_COUNT = 'change_number_discount_codes'
 const CHANGE_PREFIX = 'change_prefix'
@@ -7,17 +8,41 @@ const PENDING = 'pending'
 const COMPLETED = 'completed'
 const READY = 'ready'
 const ERROR = 'error'
+const SELECT_TAB = 'select_tab'
+const UPLOADING_CSV = 'uploading_csv'
+const UPLOADED_CSV = 'uploaded_csv'
 
 const initialState = {
+  selectedTabIndex: 0,
   status: READY,
   id: window.globals.priceRuleId,
   prefix: window.globals.priceRuleTitle.substring(0, 20),
   codeCount: 100,
   error: false,
+  csvFileName: null,
 }
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case UPLOADING_CSV:
+      return {
+        ...state,
+        uploadingCSV: true,
+        status: READY,
+      }
+    case UPLOADED_CSV:
+      return {
+        ...state,
+        uploadingCSV: false,
+        csvFileName: action.name,
+        codes: action.codes,
+      }
+    case SELECT_TAB:
+      return {
+        ...state,
+        status: state.status === PENDING ? PENDING : READY,
+        selectedTabIndex: action.index,
+      }
     case ERROR:
       return {
         ...state,
@@ -42,6 +67,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         status: COMPLETED,
+        csvFileName: null,
         progress: null,
       }
     case CHANGE_CODE_COUNT:
@@ -77,6 +103,51 @@ export function generate(count, prefix) {
   }
 }
 
+export function importCSV(codes) {
+  const truncatedCodes = codes.slice(0, 9999)
+  socket.push('generate', {
+    codes: truncatedCodes,
+    token: window.globals.token,
+    id: window.globals.priceRuleId,
+  })
+  return {
+    type: GENERATE,
+    count: truncatedCodes.length,
+  }
+}
+
+export function uploadCSV(files) {
+  const file = files[0];
+
+  return dispatch => {
+    dispatch({
+      type: UPLOADING_CSV,
+    })
+
+    const reader  = new FileReader()
+    const startTime = Date.now()
+
+    reader.onload = event => {
+      const result = reader.result
+      const codes = filter(result.split('\n'), code => code !== "")
+      const minimumTime = 500
+      const loadTime = Date.now() - startTime
+      const difference = minimumTime - loadTime
+      const extraWaitTime = difference < 0 ? 0 : difference
+
+      setTimeout(function() {
+        dispatch({
+          type: UPLOADED_CSV,
+          name: file.name,
+          codes,
+        })
+      }, extraWaitTime);
+    }
+
+    reader.readAsText(file)
+  }
+}
+
 export function changeCodeCount(count) {
   return {
     type: CHANGE_CODE_COUNT,
@@ -94,6 +165,13 @@ export function changePrefix(prefix) {
 export function error() {
   return {
     type: ERROR,
+  }
+}
+
+export function selectTab(index) {
+  return {
+    type: SELECT_TAB,
+    index,
   }
 }
 

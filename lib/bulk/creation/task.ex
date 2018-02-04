@@ -6,17 +6,45 @@ defmodule Bulk.Creation.Task do
   alias Bulk.Creation.StatusManager
   alias Bulk.Creation.TaskManager
 
+  require IEx
   @max_discount_codes 100
 
+  # Generate codes
   def start_link(shop, id, code_count, prefix) do
     Task.start_link(__MODULE__, :run, [shop, id, code_count, prefix])
   end
 
+  # Existing codes
+  def start_link(shop, id, codes) do
+    Task.start_link(__MODULE__, :run, [shop, id, codes])
+  end
+
+  # Generate codes
   def run(shop, id, count, prefix) do
     {:ok, client} = Client.start_link(shop.name, token: shop.shopify_token, throttled: true)
 
+    # chunks returns a list of chunk [100, 100, 100, 45]
     refs = chunks(count) |> Enum.map(fn chunk ->
       generate_codes(chunk, prefix) |> create_codes(client, id)
+    end)
+
+    ref_count = length(refs)
+
+    notify_position(id, hd(refs), ref_count)
+    notify_progress(client, id, ref_count)
+  end
+
+  # Existing codes
+  def run(shop, id, codes) do
+    {:ok, client} = Client.start_link(shop.name, token: shop.shopify_token, throttled: true)
+    IEx.pry
+
+    refs = chunks(length(codes)) |> Enum.with_index |> Enum.map(fn {chunk, i} ->
+      floor = @max_discount_codes * i
+
+      (@max_discount_codes * i)..floor + chunk - 1
+      |> Enum.map(&(%{code: Enum.at(codes, &1)}))
+      |> create_codes(client, id)
     end)
 
     ref_count = length(refs)

@@ -3,8 +3,9 @@ import 'phoenix_html'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
+import thunk from 'redux-thunk'
 
 import reducer from './generation'
 import Welcome from './containers/Welcome'
@@ -19,7 +20,7 @@ const isRunningLocally = window.location.hostname === 'localhost'
 if (!isRunningInsideIFrame && !isRunningLocally) {
   window.location.href = `/install${window.location.search}`
 } else {
-  const store = createStore(reducer)
+  const store = createStore(reducer, applyMiddleware(thunk))
 
   ShopifyApp.init({
     apiKey: window.globals.apiClientId,
