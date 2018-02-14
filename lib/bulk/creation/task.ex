@@ -7,6 +7,7 @@ defmodule Bulk.Creation.Task do
   alias Bulk.Creation.TaskManager
 
   require IEx
+  require Logger
   @max_discount_codes 100
 
   # Generate codes
@@ -38,8 +39,10 @@ defmodule Bulk.Creation.Task do
   def run(shop, id, codes) do
     {:ok, client} = Client.start_link(shop.name, token: shop.shopify_token, throttled: true)
 
+    Logger.debug("chunks: #{length(codes) |> chunks |> inspect}")
     refs = chunks(length(codes)) |> Enum.with_index |> Enum.map(fn {chunk, i} ->
       floor = @max_discount_codes * i
+      Logger.debug("floor: #{floor}")
 
       floor..(floor + chunk - 1)
       |> Enum.map(&(%{code: Enum.at(codes, &1)}))
