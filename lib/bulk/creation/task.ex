@@ -37,12 +37,11 @@ defmodule Bulk.Creation.Task do
   # Existing codes
   def run(shop, id, codes) do
     {:ok, client} = Client.start_link(shop.name, token: shop.shopify_token, throttled: true)
-    IEx.pry
 
     refs = chunks(length(codes)) |> Enum.with_index |> Enum.map(fn {chunk, i} ->
       floor = @max_discount_codes * i
 
-      (@max_discount_codes * i)..floor + chunk - 1
+      floor..(floor + chunk - 1)
       |> Enum.map(&(%{code: Enum.at(codes, &1)}))
       |> create_codes(client, id)
     end)
