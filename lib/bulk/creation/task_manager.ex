@@ -89,6 +89,16 @@ defmodule Bulk.Creation.TaskManager do
     {:noreply, Map.delete(state, task_pid)}
   end
 
+  def handle_info({:EXIT, task_pid, _}, state) do
+    %{^task_pid => %TaskData{id: id, timer: timer, shop: shop}} = state
+
+    Process.cancel_timer(timer)
+    clear_requests_enqueued_from_task(shop, task_pid)
+    StatusManager.task_error(id)
+
+    {:noreply, Map.delete(state, task_pid)}
+  end
+
   defp clear_requests_enqueued_from_task(shop, task_pid) do
     case QueueStore.get(shop.name) do
       queue when is_pid(queue) ->
