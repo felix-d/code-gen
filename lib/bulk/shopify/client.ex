@@ -29,6 +29,7 @@ defmodule Bulk.Shopify.Client do
     from = self()
     Agent.get(pid, fn {url, token, queue} ->
       process(from, queue, fn ->
+        log_params(params)
         response = HTTPoison.post!("#{url}#{path}", Poison.encode!(params), headers(token))
         log_response(response)
         Poison.decode!(response.body)
@@ -70,6 +71,10 @@ defmodule Bulk.Shopify.Client do
     end
 
     "#{inspect(Poison.decode!(resp.body))}" |> Logger.debug
+  end
+
+  def log_params(params) do
+    "#{inspect(params)}" |> Logger.debug
   end
 
   defp headers(token) do
